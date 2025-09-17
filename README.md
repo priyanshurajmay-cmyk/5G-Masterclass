@@ -166,3 +166,39 @@ The development of 5G followed a clear, collaborative process between 2015 and 2
 * **5G**: The first official version was defined in **Release 15** (2019). It is continuously being improved in Releases 16, 17, and beyond.
 * **5.5G**: A potential mid-cycle update, expected around 2024.
 * **6G**: Following the roughly 10-year cycle, work on 6G is expected to formalize, with a potential release around 2029.
+
+# 3. The 5G use cases
+
+### The Three Dimensions of 5G Use Cases
+5G technology is designed around three primary use cases that form a dimensional triangle. Understanding these use cases is crucial for designing the features required to serve them.
+
+1. **Enhanced Mobile Broadband (eMBB)**
+
+2. **Massive Machine Type Communications (mMTC)**
+
+3. **Ultra-Reliable and Low Latency Communications (URLLC)**
+
+<img width="1183" height="1036" alt="image" src="https://github.com/user-attachments/assets/f88e555f-5b07-4efc-ab84-751ef0c9bcfe" />
+
+## 1. Enhanced Mobile Broadband (eMBB)
+This use case is an evolution of the mobile broadband services common in 4G, designed to support more sophisticated and data-intensive applications, particularly advanced video streaming.
+
+<img width="1820" height="1080" alt="image" src="https://github.com/user-attachments/assets/c7374f1a-71c2-4de1-bcb0-505c2278435c" />
+
+## 2. Massive Machine Type Communications (mMTC)
+This category focuses on connecting a very large number of devices that transmit small amounts of data infrequently, emphasizing long battery life and deep coverage.
+
+<img width="1842" height="1019" alt="image" src="https://github.com/user-attachments/assets/2f5142f4-7174-4053-977f-e2df9751cd43" />
+
+## 3. Ultra-Reliable and Low Latency Communications (URLLC)
+URLLC is designed for mission-critical applications that demand extremely high reliability, availability, and very low latency.
+<img width="1754" height="1051" alt="image" src="https://github.com/user-attachments/assets/0eae6a9d-787c-4646-827c-768f8b84be39" />
+
+
+<img width="2107" height="1066" alt="image" src="https://github.com/user-attachments/assets/e38c6e50-9b4c-46f7-be1f-79083fd557e5" />
+
+
+
+
+
+
