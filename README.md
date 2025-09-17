@@ -198,6 +198,71 @@ URLLC is designed for mission-critical applications that demand extremely high r
 <img width="2107" height="1066" alt="image" src="https://github.com/user-attachments/assets/e38c6e50-9b4c-46f7-be1f-79083fd557e5" />
 
 
+# 4. Overview of the 5G System Architecture
+
+<img width="1683" height="719" alt="image" src="https://github.com/user-attachments/assets/507db158-43af-4eb6-9bab-df0fbb64c14d" />
+
+At a high level, the 5G system connects User Equipment (UE) to an application server (e.g., Google) through several network domains. These domains are:
+* **Access Network:** This is the 5G Radio Access Network (RAN), which uses "New Radio" (NR) technology to provide wireless connectivity to the UE.
+* **Core Network:** This is the 5G Core Network (5GC), which is responsible for functions like mobility management, security, and subscription management.
+* **Data Network:** This is the network that hosts the services the user wants to access, such as the internet.
+
+### Key Architectural Principles
+
+<img width="1461" height="836" alt="image" src="https://github.com/user-attachments/assets/255df9c8-ba29-4291-835f-a02b93414514" />
+
+#### 1. Control and User Plane Separation
+A fundamental principle of the 5G architecture is the separation of the Control Plane and the User Plane.
+* **User Plane:** Transports the actual user data. This is shown in red in the diagrams.
+* **Control Plane:** Carries the control and signaling information. This is shown in green in the diagrams.
+
+<img width="1572" height="912" alt="image" src="https://github.com/user-attachments/assets/0c92fcc0-a84a-4ba4-b5e5-c874bb000699" />
+
+This separation provides two main advantages:
+* **Independent Scaling:** The network can be scaled differently based on user needs. For example, a network with many Massive MTC devices needs a larger control plane, while a network with mobile broadband users requires a larger user plane.
+* **Flexible Deployment:** Network functions can be placed in different geographical locations to meet performance requirements, such as latency.
+
+#### 2. Architecture Representations
+
+<img width="1584" height="701" alt="image" src="https://github.com/user-attachments/assets/91bc0253-1900-40e2-8b7a-0db4ed449e88" />
+
+The 5G system can be viewed in two ways:
+* **Reference Point Representation:** The traditional method where explicitly labeled interfaces (like N1, N2, N3) connect different network functions.
+* **Service-Based Representation:** A modern approach where core network functions are represented as microservices that communicate with each other. This course focuses on this representation.
+
+### Key Network Functions
+
+#### 5G RAN Components
+* **gNodeB (gNB):** The 5G base station that uses New Radio (NR) technology. It is responsible for providing wireless connectivity to the UE.
+* **Ng-eNB:** A base station that can support both NR and LTE.
+
+#### 5G Core (5GC) Components
+* **User Plane Function (UPF):**
+    * Acts as the mobility anchor for the device as it moves.
+    * Provides the interface to the external data network.
+    * Enforces policies and is a point for lawful interception.
+* **Session Management Function (SMF):**
+    * Responsible for session management, such as establishing a new session and allocating an IP address to the device.
+* **Access and Mobility Management Function (AMF):**
+    * Manages device registration and mobility as it moves between radio cells.
+    * Establishes the encrypted signaling connection with the UE.
+* **Authentication Server Function (AUSF):**
+    * Supports the AMF with authentication-related functions and security information.
+* **Unified Data Management (UDM) / Unified Data Repository (UDR):**
+    * The UDR stores all user subscription data.
+    * The UDM is the front-end that manages this data, providing it to the AMF to assist with access authorization and registration.
+* **Policy Control Function (PCF):**
+    * Manages policies for session management and non-session management (like access control).
+    * Supports charging-related functions based on device usage.
+
+### Key Interfaces
+The reference point architecture defines several key interfaces between network components:
+* **N1:** Between the UE and the AMF.
+* **N2:** The control plane interface between the gNodeB and the AMF.
+* **N3:** The user plane interface between the gNodeB and the UPF.
+* **N4:** The interface between the SMF and the UPF.
+
+
 
 
 
