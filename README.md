@@ -781,6 +781,176 @@ A key difference from LTE is that 5G NR uses **asynchronous HARQ**.
 
 <img width="1379" height="775" alt="image" src="https://github.com/user-attachments/assets/556ebbe8-2cfd-4ab8-a27e-b44626c03101" />
 
+# 2.5 MAC Scheduler
+
+## 5G NR: The MAC Scheduler
+
+The scheduler is one of the most critical components in a 5G base station (gNodeB). It's the intelligent process that manages and allocates the network's finite radio resources among all the different users in a cell.
+
+---
+
+### What is a Scheduler?
+
+<img width="1531" height="861" alt="image" src="https://github.com/user-attachments/assets/dfbed7ca-ebf1-4406-8919-e491f67e5763" />
+
+At its core, the scheduler's job is to manage **shared channel transmission**. The radio resources, which are composed of time and frequency blocks, are a shared pool. The scheduler dynamically decides which user gets to use which specific time-frequency blocks for either sending (uplink) or receiving (downlink) data.
+
+This decision-making process is continuous, happening on a very short timescale (every slot) to adapt to the constantly changing needs of the users and the radio environment.
 
 
+---
+
+### The Scheduler's Role and Inputs
+
+<img width="1337" height="886" alt="image" src="https://github.com/user-attachments/assets/3fcde896-1c4f-4866-8824-d4475200b319" />
+
+Although the scheduler is officially part of the MAC layer, it acts as a central control unit that interacts with multiple layers. To make intelligent decisions, the scheduler relies on several key inputs:
+
+* **Channel Conditions**: Information about the quality of the radio link for each user. This is gathered from measurements of reference signals (like CSI-RS and SSB) and reported back by the device.
+* **Buffer Status**: Reports indicating how much data each user has waiting in their queue to be sent or received.
+* **Data Flow Priority**: Information about the Quality of Service (QoS) requirements for each data flow, such as whether it's for a low-latency application or a best-effort file transfer.
+
+Based on these inputs, the scheduler's main **outputs** or decisions are:
+* Which **devices** to schedule.
+* Which **resource blocks** to assign to each device.
+* The **transport format** to use, which includes the modulation scheme, coding rate, transport block size (TBS), and antenna configuration.
+
+---
+
+### Downlink Scheduling
+
+<img width="1465" height="868" alt="image" src="https://github.com/user-attachments/assets/71079207-fb65-46b3-9125-c5abccc38124" />
+
+In downlink scheduling, the gNodeB's scheduler determines how data is sent to the user devices (UEs).
+
+<img width="1278" height="862" alt="image" src="https://github.com/user-attachments/assets/a6b096dd-f1d2-46d8-824d-d5b521b4bb69" />
+
+#### Channel-Dependent Scheduling
+
+The scheduler leverages a powerful concept called **multi-user diversity**. Since different users experience different channel conditions across the frequency band at any given moment, the scheduler can achieve significant efficiency gains by assigning frequency blocks to the users who have the best signal quality on those specific blocks at that instant.
+
+#### Bandwidth Parts (BWP)
+
+<img width="1265" height="840" alt="image" src="https://github.com/user-attachments/assets/7448eb12-b6c8-4818-88a2-2820a0b2539b" />
+
+To save battery on mobile devices, a UE doesn't have to monitor the entire, very wide 5G carrier bandwidth all the time. Instead, it can operate on a smaller, configurable portion of the bandwidth called a **Bandwidth Part (BWP)**. The scheduler can dynamically adapt the UE's active BWP:
+* **Narrow BWP**: Used for idle periods or low-data activity to conserve power.
+* **Wide BWP**: The scheduler can instruct the UE to switch to a wider BWP when a large amount of data needs to be transferred quickly.
+
+#### Preemption
+
+<img width="1455" height="879" alt="image" src="https://github.com/user-attachments/assets/bcc47e14-cf2c-411b-96a6-8953259c71da" />
+
+To support ultra-low latency services, 5G allows for **preemption**. If a low-priority, high-data-rate transmission is in progress, a new, high-priority, low-latency packet can interrupt (or preempt) it. The scheduler sends a "preemption indicator" to the first device, telling it to discard the data from the preempted resources. This ensures that critical data is sent immediately, without waiting for the ongoing transmission to finish.
+
+#### Scheduling Types
+
+* **Dynamic Scheduling**: This is the default mode. For every transmission, the gNodeB sends a **Downlink Control Information (DCI)** message to the UE, providing a specific grant of resources for that single transmission.
+* **Configured Scheduling (Semi-Persistent Scheduling - SPS)**: This is ideal for predictable, periodic traffic like VoIP. The gNodeB pre-configures a recurring set of resources for the UE. The UE can then receive data on these resources without needing a DCI each time. A DCI can be sent to activate or deactivate this periodic grant or to override a specific transmission if needed.
+
+---
+
+### Uplink Scheduling
+
+In uplink scheduling, the gNodeB's scheduler controls when and how the UEs transmit data to the network.
+
+<img width="1521" height="881" alt="image" src="https://github.com/user-attachments/assets/c7bfacd1-6f7c-408b-88be-b94eaf7e3ebf" />
+
+#### The Uplink Scheduling Process
+
+<img width="1497" height="818" alt="image" src="https://github.com/user-attachments/assets/d256dcd9-181e-4e26-b0d1-f7704daed56f" />
+
+The scheduler in the gNodeB makes decisions based on:
+* **Uplink Channel Quality**: This is estimated by the gNodeB based on **Sounding Reference Signals (SRS)** that the UE is configured to transmit.
+* **Buffer Status**: The UE sends reports to the gNodeB indicating how much data it has waiting to send.
+
+Based on this information, the gNodeB sends an **uplink grant** (via DCI) to the UE, telling it exactly which time-frequency resources it is allowed to use for its transmission.
+
+#### Key Differences from Downlink Scheduling
+
+* Uplink transmissions are typically **power-limited**, not bandwidth-limited. A UE's maximum transmission power is a key constraint.
+* Scheduling is **per-device**. The gNodeB grants a chunk of resources to a device, but the UE's internal logic decides which of its data flows (e.g., from different apps) gets priority to be sent using that grant.
+
+#### Uplink Scheduling Types
+
+Similar to the downlink, the uplink supports both **Dynamic Scheduling** and two types of **Configured Scheduling**:
+* **Type 1 (Grant-Free)**: The UE is given a pre-configured, periodic resource and can transmit without receiving a specific DCI grant. This is useful for reducing latency for periodic data.
+* **Type 2 (Configured Grant)**: The resources are pre-configured, but a DCI from the gNodeB is required to activate them for transmission.
+
+# 2.6 Physical Layer(PHY)
+
+The Physical Layer (PHY) is the lowest layer in the 5G protocol stack, sitting just below the MAC layer. It is responsible for the actual transmission and reception of data over the radio interface.
+
+---
+
+### Physical Channels vs. Transport Channels
+
+The physical layer receives data from the MAC layer through **transport channels** and maps this data onto **physical channels**.
+
+<img width="1551" height="666" alt="image" src="https://github.com/user-attachments/assets/d3140973-5ec2-4b6a-9d56-eb73232813d2" />
+
+* **Transport Channels** (e.g., PCH, BCH, DL-SCH, UL-SCH) are defined by how data is transported.
+* **Physical Channels** are defined by the specific set of time-frequency resources used for transmission.
+
+The main physical channels in 5G NR are:
+
+<img width="1534" height="898" alt="image" src="https://github.com/user-attachments/assets/b8fa9051-9749-4ad7-901c-1a83c7322a0c" />
+
+#### Downlink Channels:
+* **PBCH (Physical Broadcast Channel)**: Carries essential system information.
+* **PDSCH (Physical Downlink Shared Channel)**: The main channel for user data and other control information.
+* **PDCCH (Physical Downlink Control Channel)**: Carries scheduling information and other control commands.
+
+#### Uplink Channels:
+* **PUSCH (Physical Uplink Shared Channel)**: The main channel for user data transmitted from the device to the network.
+* **PUCCH (Physical Uplink Control Channel)**: Carries control information from the device, such as HARQ acknowledgements.
+* **PRACH (Physical Random Access Channel)**: Used for the initial random access procedure when a device wants to connect to the network.
+
+---
+
+### Downlink Shared Channel (DL-SCH) Processing
+
+The journey of data from the MAC layer through the physical layer for a downlink transmission involves several key steps to prepare it for the air interface:
+
+<img width="1273" height="808" alt="image" src="https://github.com/user-attachments/assets/c2cc0824-e06d-4697-8fe9-9302ebc4e10d" />
+
+1.  **CRC Attachment**: A **Cyclic Redundancy Check (CRC)** is added to the transport block. This is an error detection code that allows the receiver to verify if the entire block was received correctly.
+
+<img width="1627" height="747" alt="image" src="https://github.com/user-attachments/assets/805ce3f3-2e4e-4e6a-816c-23d2b8d7ac1f" />
+
+2.  **Code Block Segmentation**: If a transport block is very large, it's broken down into smaller segments called **Code Blocks (CBs)**. A CRC is also added to each individual code block. This is crucial for efficient retransmissions, as only the erroneous code blocks need to be resent, not the entire transport block.
+
+<img width="1600" height="753" alt="image" src="https://github.com/user-attachments/assets/c6450e0d-2533-410c-8a5d-b63f916016d5" />
+
+3.  **LDPC Coding**: **Low-Density Parity-Check (LDPC)** coding is the primary error correction technique used in 5G for data channels. It adds redundant bits to the data, which helps the receiver to correct errors that occur during transmission over the noisy radio channel. 5G NR uses two different LDPC "base graphs" (BG1 and BG2) depending on the transport block size and the coding rate to optimize performance.
+
+<img width="1642" height="862" alt="image" src="https://github.com/user-attachments/assets/6095d5d5-739f-47c5-b4cd-6d5eb8f41540" />
+
+4.  **Rate Matching**: This step selects the exact number of bits that will be transmitted in a given time slot. It ensures that the amount of data perfectly matches the allocated radio resources.
+
+<img width="1636" height="794" alt="image" src="https://github.com/user-attachments/assets/435d173e-604a-45dc-a73e-4faa49d21b08" />
+
+5.  **Scrambling**: The data is multiplied by a cell-specific scrambling sequence. This makes the signal appear like random noise to devices in neighboring cells, which helps to reduce inter-cell interference.
+
+<img width="1639" height="870" alt="image" src="https://github.com/user-attachments/assets/4fbe08ff-2a48-49c2-8d86-8a3df879895d" />
+
+6.  **Modulation**: The scrambled bits are mapped to complex-valued modulation symbols. 5G NR supports several modulation schemes, including **QPSK, 16QAM, 64QAM, and 256QAM**, for both uplink and downlink. Higher-order modulation schemes can carry more data but require better signal quality.
+
+<img width="1576" height="933" alt="image" src="https://github.com/user-attachments/assets/5e10a924-ad3a-45ad-a0db-76825ed52307" />
+
+7.  **Layer Mapping**: The modulation symbols are mapped onto one or more transmission layers. This is part of the MIMO (Multiple-Input Multiple-Output) technology, where multiple data streams can be sent simultaneously to increase data rates.
+
+<img width="1587" height="764" alt="image" src="https://github.com/user-attachments/assets/73b1a8ac-97e3-47b5-a77d-5bb4cc64c34c" />
+
+9.  **Precoding**: This is another MIMO technique where the data layers are multiplied by a precoding matrix. This process "shapes" the signal to align with the specific characteristics of the radio channel, which helps to improve the signal quality at the receiver. This step maps the data layers to virtual antenna ports.
+
+<img width="1603" height="847" alt="image" src="https://github.com/user-attachments/assets/42f3324a-12ee-4301-8793-df0e4a9cecea" />
+
+10.  **Resource Mapping**: The precoded symbols for each virtual antenna port are mapped to the specific time-frequency resource elements that have been allocated by the scheduler for this transmission.
+
+<img width="1537" height="813" alt="image" src="https://github.com/user-attachments/assets/5dfc2b1a-11be-4b92-83ff-d620b1324651" />
+
+11. **OFDM Signal Generation**: Finally, an **Orthogonal Frequency-Division Multiplexing (OFDM)** signal is generated for each antenna port. This involves an Inverse Fast Fourier Transform (IFFT) and digital-to-analog conversion before the signal is sent to the RF (Radio Frequency) unit for transmission.
+
+<img width="1431" height="815" alt="image" src="https://github.com/user-attachments/assets/382695c1-2be4-4f7e-8c3d-413bb2a65ad6" />
 
