@@ -1039,3 +1039,83 @@ For applications requiring extremely low latency, waiting for a full slot bounda
 The fundamental unit of the 5G resource grid is the **Resource Element (RE)**, which represents one subcarrier in the frequency domain for the duration of one OFDM symbol in the time domain.
 
 For scheduling purposes, Resource Elements are grouped into **Resource Blocks (RBs)**. One Resource Block consists of **12 consecutive subcarriers** in the frequency domain.
+
+# 2.8 RRC and NAS
+
+<img width="1484" height="883" alt="image" src="https://github.com/user-attachments/assets/0366a41b-1c61-45e0-a308-24bcd2507eaf" />
+
+In the 5G architecture, the control plane is managed by two key protocols that operate at different levels of the network stack:
+
+* **Non-Access Stratum (NAS)**: This protocol handles the communication between the User Equipment (UE) and the core network's Access and Mobility Management Function (AMF). It is responsible for functions that are independent of the radio access technology, such as:
+    * Authentication and security procedures.
+    * Managing idle-mode behavior, like paging.
+    * Assigning IP addresses to devices.
+
+* **Radio Resource Control (RRC)**: This protocol governs the communication between the UE and the gNodeB (the 5G base station). It manages all aspects of the radio connection, including:
+    * Broadcasting essential system information.
+    * Establishing, maintaining, and tearing down the radio connection.
+    * Controlling device mobility within the radio network.
+    * Configuring and receiving measurement reports from the device.
+    * Managing the device's radio capabilities.
+
+---
+
+### RRC States
+
+<img width="1620" height="980" alt="image" src="https://github.com/user-attachments/assets/7090ff13-1f52-497b-ace5-bd7344a817a0" />
+
+To efficiently manage device resources and power consumption, a UE in the 5G network can be in one of three RRC states:
+
+#### 1. RRC IDLE
+
+This is the initial state of the device after it is powered on.
+
+* **Characteristics**:
+    * The device is not registered with the network.
+    * There is no active RRC connection (no RRC context).
+* **Behavior**: In this state, the UE is mostly "sleeping" to conserve battery. It periodically wakes up to monitor for paging messages from the network, which would alert it to an incoming call or data.
+
+#### 2. RRC CONNECTED
+
+When the device needs to actively send or receive data, it moves from IDLE to the CONNECTED state.
+
+* **Characteristics**:
+    * An RRC connection is established between the UE and the gNodeB.
+    * The device is registered with the network and has a known location at the cell level.
+* **Behavior**: In this state, the UE is actively communicating with the network, and seamless handovers between cells are managed by the network to ensure uninterrupted service.
+
+#### 3. RRC INACTIVE
+
+The INACTIVE state is a new addition in 5G, designed to offer a middle ground that combines the power efficiency of the IDLE state with the quick connection resumption of the CONNECTED state.
+
+* **Characteristics**:
+    * The RRC context (the device's radio configuration and security information) is stored in both the UE and the last serving gNodeB.
+    * The connection to the core network is maintained.
+* **Behavior**: This state allows the UE to transition back to the CONNECTED state very quickly (**RRC Resume**) without the need for the full connection setup procedure from IDLE. This is highly beneficial for applications that have sporadic data transfers, as it significantly reduces latency and signaling overhead. While in this state, the device can move around a predefined set of cells (a RAN Notification Area) without needing to update the network of its location.
+
+---
+
+### Mobility Management
+
+<img width="1618" height="917" alt="image" src="https://github.com/user-attachments/assets/c04687ae-3f33-4b64-b81d-62c68d47d7bb" />
+
+Mobility management ensures that a device stays connected as it moves through the network. The strategy for managing this depends on the RRC state of the device.
+
+#### Idle and Inactive Mode Mobility
+
+In both the IDLE and INACTIVE states, mobility is **UE-controlled**.
+
+* **Tracking Areas (TA)**: The core network groups cells into larger **Tracking Areas**. When a device in IDLE mode moves into a new TA, it must perform a **NAS Registration Update** to inform the core network of its new location.
+* **RAN Notification Areas (RNA)**: The radio access network (RAN) groups cells into **RAN Notification Areas**. A device in the INACTIVE state can move freely between cells within its assigned RNA without needing to contact the network. Only when it moves to a cell outside of its current RNA does it need to perform an **RRC RAN Notification Area Update**.
+
+This hierarchical approach reduces the amount of signaling required, as the device only needs to update the network when it crosses the boundary of a larger geographical area.
+
+#### Connected Mode Mobility
+
+<img width="1185" height="898" alt="image" src="https://github.com/user-attachments/assets/e1b63b64-fe9f-4215-b31a-7f025c98311b" />
+
+In the RRC CONNECTED state, mobility is entirely **network-controlled**.
+
+* The UE continuously measures the signal strength of its current (serving) cell and neighboring cells using reference signals (SSB).
+* It reports these measurements back to the gNodeB.
+* Based on these reports, the network makes the decision about when and where to perform a **handover**, seamlessly transferring the device's connection from one cell to another to maintain the best possible link quality.
