@@ -1201,3 +1201,77 @@ At this point, the UE has enough information to decide whether it wants to "camp
 Other System Information Blocks (SIBs) contain less essential information that is not immediately needed for initial access, such as details for cell re-selection to other frequencies or other radio technologies (like LTE). These can be broadcast periodically by the network or provided to the device on-demand when requested.
 
 <img width="819" height="875" alt="image" src="https://github.com/user-attachments/assets/efbdc0e3-436b-471f-af26-2a269ac56999" />
+
+# 3.2 Random Access
+## 5G NR: Random Access Procedure
+
+After a device has successfully synchronized with a cell and read the initial system information, it needs to perform a **Random Access (RA)** procedure to establish a connection with the network.
+
+---
+
+### When is Random Access Triggered?
+
+A device will initiate the Random Access procedure in several situations:
+* When it needs to transition from an idle state to a connected state to send or receive data.
+* When it is already connected but has lost its uplink synchronization.
+* During a handover to a new cell.
+
+---
+
+### The 4-Step Random Access Procedure
+
+The most common type of random access is the **4-step Contention-Based Random Access (CBRA)**. It's called "contention-based" because multiple devices might try to access the network at the same time, leading to potential collisions.
+
+<img width="1200" height="754" alt="image" src="https://github.com/user-attachments/assets/f562ef09-bc74-43db-965a-bda50f5688f3" />
+
+The procedure involves four key messages exchanged between the User Equipment (UE) and the gNodeB:
+
+#### Step 1: Message 1 - Random Access Preamble
+
+<img width="1565" height="950" alt="image" src="https://github.com/user-attachments/assets/e2bb47d9-40ac-4b00-97c8-85998e8b524c" />
+
+* **What it is**: The UE sends a randomly selected **preamble** sequence to the gNodeB. This preamble is like a "hello" message, signaling the network that the device wants to connect.
+* **Key Information**:
+    * The UE uses a specific physical channel called the **Physical Random Access Channel (PRACH)** for this transmission.
+    * It also performs initial **timing adjustments** based on its measurements of the cell's synchronization signals (SSB) to ensure the preamble arrives at the gNodeB at the correct time.
+
+#### Step 2: Message 2 - Random Access Response (RAR)
+
+<img width="1638" height="866" alt="image" src="https://github.com/user-attachments/assets/0a947926-6f10-42cb-b116-358f7e96c26b" />
+
+* **What it is**: The gNodeB, upon detecting the preamble, sends back a **Random Access Response (RAR)**.
+* **Key Information**:
+    * **Preamble Identifier**: The RAR indicates which preamble it is responding to.
+    * **Timing Correction**: It provides a precise timing advance command to correct any remaining synchronization errors.
+    * **Temporary ID (TC-RNTI)**: A temporary identifier is assigned to the UE for the duration of the random access procedure.
+    * **Uplink Grant**: It gives the UE an initial grant of uplink resources (time and frequency blocks) to use for the next step.
+
+#### Step 3: Message 3 - RRC Connection Request
+
+<img width="1664" height="772" alt="image" src="https://github.com/user-attachments/assets/3b490898-ef8e-4535-a150-702c1553abc2" />
+
+* **What it is**: Using the uplink resources granted in the RAR, the UE sends its first scheduled message to the gNodeB. This is an **RRC Connection Setup Request**.
+* **Key Information**: This message includes a unique identifier for the UE. This is crucial for the next step, **contention resolution**. If two devices happened to choose the same preamble in Step 1, they would both receive the same RAR. By sending their unique IDs in this step, the network can tell them apart.
+
+#### Step 4: Message 4 - Contention Resolution
+
+<img width="1544" height="769" alt="image" src="https://github.com/user-attachments/assets/dd3515c2-83af-46c0-9305-7f3fc7e922c8" />
+
+* **What it is**: The gNodeB sends a final message to resolve any potential contention and confirm the connection.
+* **Key Information**:
+    * This message is addressed to the UE using its temporary ID (TC-RNTI).
+    * Crucially, the message contains the **unique UE ID** that was sent in Step 3.
+    * When the UE receives this message and sees its own unique ID, it knows that it has successfully won the contention and the random access procedure is complete. It is now in an **RRC Connected** state.
+    * If another device was contending for the same resource, it will not see its ID in this message and will know that its access attempt has failed, prompting it to go back to Step 1 and try again.
+
+---
+
+### Contention-Free Random Access (CFRA)
+
+<img width="517" height="792" alt="image" src="https://github.com/user-attachments/assets/23127a79-542c-42d7-a4eb-142156e2f5bf" />
+
+There is also a **Contention-Free Random Access (CFRA)** procedure. This is used in specific scenarios where the network wants to initiate contact with a device without the risk of collision, such as:
+* During a handover procedure.
+* When there is downlink data waiting for a specific UE.
+
+In this case, the gNodeB pre-assigns a dedicated, unique preamble to the UE. Since no other device will use this preamble, there is no possibility of contention, making the process faster and more reliable.
