@@ -676,8 +676,110 @@ The retransmission process involves coordination between the transmitter and rec
 
 6.  **Successful Reception (T6)**: Once all PDUs, including the retransmitted ones, are successfully received, the transmission is complete. The transmitter can request a final status report to confirm the delivery of all data.
 
+# 2.4 Medium Access Control (MAC) Layer
 
 
+## 5G NR: Medium Access Control (MAC) Layer
+
+The Medium Access Control (MAC) layer sits between the RLC and Physical (PHY) layers in the 5G protocol stack. It manages how and when data is transmitted over the air interface.
+
+---
+
+### Functions of the MAC Layer
+
+The MAC layer is responsible for several key functions in the 5G air interface:
+
+* **Logical Channel Multiplexing**: It combines data from various logical channels into a single data stream for transmission.
+* **Hybrid ARQ (HARQ) Retransmissions**: It manages a rapid retransmission protocol to correct errors that occur during transmission.
+* **Scheduling**: It determines which users get to transmit or receive data at any given time, managing the allocation of radio resources.
+* **Multiplexing for Carrier Aggregation (CA)**: When multiple carriers are used simultaneously, the MAC layer distributes the data across them.
+
+---
+
+### Multiplexing and Channel Mapping
+
+The MAC layer acts as a bridge between two types of channels:
+
+<img width="1581" height="815" alt="image" src="https://github.com/user-attachments/assets/2b958c4f-9eca-48df-8bcb-5bf05210fdf5" />
+
+* **Logical Channels**: These channels are defined by the **type of information** they carry. They are the interface to the RLC layer above. Examples include:
+    * **PCCH** (Paging Control Channel)
+    * **BCCH** (Broadcast Control Channel)
+    * **CCCH** (Common Control Channel)
+    * **DCCH** (Dedicated Control Channel)
+    * **DTCH** (Dedicated Traffic Channel)
+
+<img width="1465" height="858" alt="image" src="https://github.com/user-attachments/assets/571fe3f4-eb7a-483b-b2f3-eb52b57afa75" />
+
+* **Transport Channels**: These channels define **how data is transmitted** over the air interface, including its characteristics. They are the interface to the PHY layer below. Examples include:
+    * **PCH** (Paging Channel)
+    * **BCH** (Broadcast Channel)
+    * **DL-SCH** (Downlink Shared Channel)
+    * **UL-SCH** (Uplink Shared Channel)
+
+The core multiplexing function of the MAC layer is to map the data from the various logical channels onto the appropriate transport channels for transmission.
+
+
+---
+
+### MAC Control Elements (CEs)
+
+In addition to user data from the RLC layer, the MAC layer can insert its own control information directly into the data packets (MAC PDUs). These pieces of control information are known as **MAC Control Elements (CEs)**.
+
+<img width="1366" height="738" alt="image" src="https://github.com/user-attachments/assets/56fb32e5-de39-41f5-9412-37367d7e271e" />
+
+This is a form of in-band signaling used to manage various radio link functions, such as:
+* Scheduling requests
+* Timing advance commands
+* Random access procedures
+
+A complete MAC PDU is constructed from multiple components, including a header, MAC SDUs (the data payload from RLC), one or more MAC CEs, and padding to fill the transport block if necessary.
+
+---
+
+<img width="1001" height="778" alt="image" src="https://github.com/user-attachments/assets/4b2f93c7-b238-4831-af44-758c3825af00" />
+
+### Hybrid ARQ (HARQ)
+
+<img width="1180" height="841" alt="image" src="https://github.com/user-attachments/assets/9f4da7ad-aac6-48d5-99da-abcfb9ccf8cd" />
+
+HARQ is a critical function for ensuring fast and reliable data transmission. It's called "hybrid" because it combines high-speed retransmissions (managed by MAC) with error correction coding (performed by the PHY layer).
+
+#### Stop-and-Wait Protocol
+
+<img width="1502" height="893" alt="image" src="https://github.com/user-attachments/assets/7ea7077a-f06e-408a-8fa6-edf91628fcb1" />
+
+The fundamental HARQ mechanism is a **stop-and-wait** protocol. A transmitter sends a data block and then waits for feedback from the receiver:
+* If the block is received correctly, the receiver sends an **ACK (Acknowledgement)**.
+* If the block has errors, the receiver sends a **NAK (Negative Acknowledgement)**, and the transmitter resends the block.
+
+While simple, waiting for feedback for every single packet is inefficient and introduces latency.
+
+#### Parallel HARQ Processes
+
+To overcome the inefficiency of a single stop-and-wait process, 5G NR runs **multiple HARQ processes in parallel**. This allows the transmitter to send new data blocks using other available processes while one process is waiting for an ACK/NAK. This pipelined approach significantly increases throughput and efficiency.
+
+
+#### Asynchronous HARQ
+
+A key difference from LTE is that 5G NR uses **asynchronous HARQ**.
+* In LTE's **synchronous** system, the timing for HARQ feedback was fixed and predictable.
+* In NR's **asynchronous** system, the feedback timing is flexible. The specific HARQ process the feedback belongs to is explicitly indicated in the Downlink Control Information (DCI). This flexibility is essential to support dynamic TDD configurations and advanced scheduling in 5G.
+
+---
+
+### Code Block Group (CBG) Retransmissions
+
+5G allows for very large transport blocks. If a single bit error occurs in a large block, retransmitting the entire block is highly inefficient. To solve this, **Code Block Group (CBG)-based retransmission** is used.
+
+<img width="1188" height="534" alt="image" src="https://github.com/user-attachments/assets/8a0b3250-309c-44c1-96ad-6cddaa942278" />
+
+1.  A large Transport Block is first segmented into smaller **Code Blocks (CBs)** at the physical layer.
+2.  These CBs are then bundled into **Code Block Groups (CBGs)**.
+3.  When a transmission error occurs, the receiver's HARQ feedback can pinpoint exactly which **CBG** failed, rather than just marking the entire transport block as failed.
+4.  The transmitter then only needs to re-send the specific CBG that contained the error, saving significant radio resources and improving efficiency.
+
+<img width="1379" height="775" alt="image" src="https://github.com/user-attachments/assets/556ebbe8-2cfd-4ab8-a27e-b44626c03101" />
 
 
 
