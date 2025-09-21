@@ -1275,3 +1275,198 @@ There is also a **Contention-Free Random Access (CFRA)** procedure. This is used
 * When there is downlink data waiting for a specific UE.
 
 In this case, the gNodeB pre-assigns a dedicated, unique preamble to the UE. Since no other device will use this preamble, there is no possibility of contention, making the process faster and more reliable.
+
+<img width="1155" height="721" alt="image" src="https://github.com/user-attachments/assets/8a87ceab-a911-498b-b2fc-71c15ca83bba" />
+
+# 4. 5G Core Networks
+
+# 4.1 5G Core Network: Identifiers
+
+In the 5G ecosystem, a variety of identifiers are used to distinguish between devices and individual subscriptions, ensuring that data is routed correctly and securely.
+
+<img width="783" height="876" alt="image" src="https://github.com/user-attachments/assets/8af9d9c1-c7aa-4e5f-9a8f-92f0243f24f9" />
+
+---
+
+### Device vs. Subscription Identity
+
+It's important to differentiate between two main types of identifiers:
+
+* **Device Identity**: This is tied to the physical piece of hardware, the User Equipment (UE). The primary identifier for this is the **PEI**.
+* **Subscription Identity**: This is linked to the user's subscription with the mobile network operator. The core identifiers here are the **SUPI** and **SUCI**, with the **GUTI** used for temporary tracking.
+
+---
+
+### Device Identifier
+
+#### PEI (Permanent Equipment Identifier)
+
+<img width="1536" height="964" alt="image" src="https://github.com/user-attachments/assets/66018f2b-9708-472a-85a4-72658af86b2c" />
+
+* **What it is**: The PEI is the unique serial number that identifies a physical mobile device. In most mobile devices, this is the **IMEI** (International Mobile Station Equipment Identity) or **IMEISV** (which also includes the software version).
+* **Key Characteristics**:
+    * It is permanently stored in the device.
+    * It is transmitted over the network only in specific situations, such as for emergency calls, to maintain security.
+
+---
+
+### Subscription Identifiers
+
+<img width="1577" height="897" alt="image" src="https://github.com/user-attachments/assets/ae27bc10-292e-4649-a876-03738d95e194" />
+
+#### SUPI (Subscription Permanent Identifier)
+
+* **What it is**: The SUPI is the globally unique and permanent identifier for a user's subscription. In the context of traditional mobile networks, the SUPI is the **IMSI** (International Mobile Subscriber Identity).
+* **IMSI Structure**:
+    * **MCC (Mobile Country Code)**: A 3-digit code that identifies the country.
+    * **MNC (Mobile Network Code)**: A 2 or 3-digit code for the specific network operator within that country.
+    * **MSIN (Mobile Subscriber Identification Number)**: The remaining digits uniquely identify the subscriber on that network.
+
+#### SUCI (Subscription Concealed Identifier)
+
+<img width="1370" height="926" alt="image" src="https://github.com/user-attachments/assets/12ca2236-efe2-4e7a-9d22-62883b75a2b7" />
+
+* **Why it's needed**: To enhance privacy and prevent tracking, the permanent SUPI (IMSI) is rarely sent over the radio network in an unencrypted format. Sending it openly would make users vulnerable to "IMSI Catchers," which are devices that can intercept this identifier to track a user's location and activity.
+* **What it is**: Before being sent over the air, the SUPI is encrypted using a "protection scheme." The resulting encrypted value is the **SUCI**. This ensures that even if the identifier is intercepted, it cannot be used to identify the subscriber.
+
+#### GUTI (Globally Unique Temporary Identifier)
+
+<img width="1395" height="834" alt="image" src="https://github.com/user-attachments/assets/b489b0f8-39dd-4125-903e-9c15e0209cd4" />
+
+* **What it is**: To avoid sending the SUPI/SUCI frequently, the network assigns a temporary identifier to the device called the **GUTI**. This is a temporary ID that can be changed by the network at any time for security.
+* **Structure**: The GUTI is composed of two main parts:
+    * **GUAMI (Globally Unique AMF Identifier)**: This identifies the specific Access and Mobility Management Function (AMF) in the core network that is currently serving the device. The GUAMI itself is made up of the MCC, MNC, and an AMF Identifier.
+    * **5G-TMSI (5G Temporary Mobile Subscriber Identity)**: This is the temporary identifier for the device within that specific AMF.
+
+
+
+
+# **SUMMARY** 5G core networks file no. 4
+
+## 5G Core Network: An Overview
+
+The 5G Core Network introduces a **Service-Based Architecture (SBA)**, which is a major shift from the architecture of previous mobile generations. Instead of monolithic network elements with fixed interfaces, the 5G core is built on the principles of **microservices**, where each **Network Function (NF)** is a modular, independent component that offers its services to other NFs through well-defined, web-based APIs.
+
+This cloud-native approach makes the network highly flexible, scalable, and easier to upgrade and maintain.
+
+---
+
+### Key Network Functions (NFs) in the 5G Core
+
+Here are the roles of the main Network Functions in the 5G Core:
+
+#### AMF (Access and Mobility Management Function)
+
+The AMF is the primary control point for managing the device's connection to the network. Its main responsibilities are:
+
+* **Registration Management**: Handles the process of a device registering and de-registering with the network, which includes authenticating the user.
+* **Connection Management**: Establishes, maintains, and releases the control plane connections between the device and the core network.
+* **Mobility Management**: Tracks the device's location and manages handovers between base stations (gNodeBs) to ensure seamless connectivity as the user moves.
+
+
+
+---
+
+#### SMF (Session Management Function)
+
+The SMF is responsible for all aspects related to the user's data sessions. A **PDU (Packet Data Unit) Session** is essentially the logical connection that provides the user with access to a data network, like the internet.
+
+The SMF's key functions include:
+* **PDU Session Management**: It handles the setup, modification, and release of PDU sessions.
+* **IP Address Allocation**: It assigns an IP address (IPv4, IPv6, or both) to the device for its data session.
+* **UPF Selection**: It selects the appropriate User Plane Function (UPF) to handle the user's data traffic.
+* **Policy Enforcement**: It works with the PCF to enforce Quality of Service (QoS) and other policies for the data session.
+
+---
+
+#### UPF (User Plane Function)
+
+The UPF is the workhorse of the user data plane. It is responsible for forwarding the actual user traffic between the radio access network (the gNodeB) and the external data network (e.g., the internet).
+
+Its main functions are:
+* **Packet Routing and Forwarding**: It routes and forwards user data packets.
+* **Policy Enforcement**: It applies the rules and policies defined by the SMF and PCF, such as Quality of Service (QoS) marking.
+* **Mobility Anchor**: It acts as the anchor point for the PDU session, ensuring that the user's IP address remains the same even when they move between different base stations.
+
+
+
+---
+
+#### UDM and UDR (Unified Data Management and Unified Data Repository)
+
+These two functions work together to manage all the subscription data in the 5G network. This separation of the application logic from the data storage is a key principle of the service-based architecture.
+
+* **UDR (Unified Data Repository)**: This is the centralized database that securely stores all the subscription data, policy data, and other network information.
+* **UDM (Unified Data Management)**: This function acts as the front-end to the UDR. It provides the application logic for managing and accessing the subscription data, including functions for authentication and access authorization.
+
+---
+
+#### PCF (Policy Control Function)
+
+The PCF is responsible for defining and managing the policies that govern the behavior of the network and the services provided to users. These policies can be applied at different levels, from all users on the network to a specific data flow for a single user.
+
+The PCF manages two main types of policies:
+* **Access and Mobility Policies**: These include rules for things like service area restrictions and which radio technologies a user is allowed to access.
+* **Session Management Policies**: These are rules related to data sessions, such as:
+    * **Gating Control**: Deciding whether to allow or block certain types of data traffic.
+    * **QoS Control**: Defining the Quality of Service for different data flows, ensuring that high-priority traffic gets the necessary resources.
+
+# **SUMMARY** 5G call flows file NO. 5
+
+## 5G Core Network: Key Procedures
+
+This document outlines some of the fundamental procedures that manage a device's lifecycle in a 5G network, from connecting to the network to disconnecting and establishing data sessions.
+
+---
+
+### Registration Procedure
+
+The **Registration Procedure** is how a User Equipment (UE) gets authorized to use the 5G network. This procedure is always initiated by the UE and can be triggered for several reasons:
+
+* **Initial Registration**: Occurs when a UE is powered on and needs to connect to the network for the first time.
+* **Mobility Registration**: Triggered when a UE moves into a new Tracking Area (a group of cells) and needs to update the network with its new location.
+* **Periodic Registration**: The UE periodically re-registers with the network to signal that it is still active.
+* **Emergency Registration**: A special type of registration for accessing emergency services.
+
+#### The Registration Process
+
+1.  The UE sends a **Registration Request** to the Radio Access Network (RAN), which forwards it to the Access and Mobility Management Function (AMF).
+2.  If the UE is moving from an area served by a different AMF, the new AMF will fetch the UE's context (its current state and security information) from the old AMF.
+3.  The AMF then initiates **authentication and security** procedures to verify the identity of the user.
+4.  The AMF updates the Unified Data Management (UDM) with the UE's registration status and subscribes to notifications for any changes in the subscription data.
+5.  Policy control rules are created by the Policy Control Function (PCF).
+6.  The AMF sends a **Registration Accept** message back to the UE, confirming that it is now successfully registered with the network. This message may also include a new temporary identifier (GUTI) for the UE.
+
+---
+
+### PDU Session Establishment
+
+Once a UE is registered, it can request to establish a **Packet Data Unit (PDU) Session**. This is the logical connection that allows the UE to exchange data packets with an external Data Network (DN), like the internet.
+
+This procedure can be initiated by the UE or, in some cases, triggered by the network.
+
+#### The PDU Session Establishment Process
+
+1.  The UE sends a **PDU Session Establishment Request** to the AMF.
+2.  The AMF selects a Session Management Function (SMF) to handle the data session and forwards the request.
+3.  The SMF interacts with the UDM to retrieve the user's subscription data related to data sessions.
+4.  The SMF communicates with the PCF to get the relevant policy and Quality of Service (QoS) rules for this session. It also selects a User Plane Function (UPF) that will handle the user's data traffic.
+5.  The SMF sends a message to the AMF to establish the user plane resources between the RAN and the selected UPF.
+6.  The RAN configures the radio resources for the UE, establishing the data path.
+7.  The SMF confirms the establishment of the session with the UPF.
+8.  The UE is now able to send and receive data.
+
+---
+
+### Deregistration Procedure
+
+Deregistration is the process of disconnecting a UE from the network services. This can be initiated either by the UE (e.g., when the device is powered off) or by the network (e.g., due to subscription changes).
+
+#### The Deregistration Process
+
+1.  A **Deregistration Request** is sent to the AMF.
+2.  The AMF initiates the release of any active PDU Sessions by communicating with the corresponding SMF.
+3.  The SMF releases the session with the PCF and the UPF.
+4.  The AMF informs the UDM that the UE is now deregistered.
+5.  A **Deregistration Accept** message is sent back to the UE.
+6.  The signaling connection between the UE and the AMF is released, and the device transitions to a deregistered state.
