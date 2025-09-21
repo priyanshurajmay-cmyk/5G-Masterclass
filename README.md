@@ -339,7 +339,7 @@ While Options 2 and 3 are the most prominent, other configurations exist for dif
 <img width="1382" height="934" alt="image" src="https://github.com/user-attachments/assets/4c40aed6-397c-4563-9aed-8aac537ca313" />
 
 
-# 2. 5G RAN Protocol Stack
+# 2. 5G RAN Protocol Stack (2. 5G New Radio (NR) Radio Access Networks (RAN))
 
 ### The RAN Protocol Stack Overview
 
@@ -1119,3 +1119,85 @@ In the RRC CONNECTED state, mobility is entirely **network-controlled**.
 * The UE continuously measures the signal strength of its current (serving) cell and neighboring cells using reference signals (SSB).
 * It reports these measurements back to the gNodeB.
 * Based on these reports, the network makes the decision about when and where to perform a **handover**, seamlessly transferring the device's connection from one cell to another to maintain the best possible link quality.
+
+# 3.  Key RAN Procedures
+
+# 3.1 Initial Access
+
+When a 5G device is powered on, the very first thing it needs to do is find and synchronize with a nearby 5G cell. This entire process is known as **Initial Access**.
+
+---
+
+### Cell Search
+
+<img width="1085" height="829" alt="image" src="https://github.com/user-attachments/assets/21c16865-922e-4b6e-b23e-00450bf06850" />
+
+The primary goal of the cell search procedure is for the User Equipment (UE) to achieve time and frequency synchronization with a cell and to identify that cell's unique **Physical Cell ID (PCI)**.
+
+To facilitate this, each 5G cell broadcasts a **Synchronization Signal Block (SSB)**. The SSB is a special block of signals that contains three key components:
+* **Primary Synchronization Signal (PSS)**
+* **Secondary Synchronization Signal (SSS)**
+* **Physical Broadcast Channel (PBCH)**
+
+The PSS and SSS are used together to determine the cell's PCI, while the PBCH carries the most essential system information that the device needs to connect to the network.
+
+<img width="1409" height="854" alt="image" src="https://github.com/user-attachments/assets/7a9ff564-758f-4e29-8597-a6f7b6c7e2f7" />
+
+#### SSB Transmission
+
+In 5G, the SSB is not always transmitted from the center of the cell's bandwidth. To cover a wide area, especially at higher frequencies, SSBs can be transmitted in different directions using a technique called **beamforming**. A set of these directionally transmitted SSBs is called an **SSB Burst Set**.
+
+---
+
+### The Cell Search Process in Detail
+
+The cell search is a multi-step process:
+
+#### 1. Scan for the Primary Synchronization Signal (PSS)
+
+When a device is first turned on, it doesn't know where the 5G carrier frequencies are. It begins by scanning a range of possible frequencies, looking for the PSS.
+
+<img width="1516" height="901" alt="image" src="https://github.com/user-attachments/assets/95e2c6b8-f6e6-41b8-b5bc-d207230db92b" />
+
+To make this scanning process faster and more efficient, 5G introduced a concept called the **Synchronization Raster**. This is a sparse grid of frequencies where the SSB is guaranteed to be found. Instead of scanning the entire dense **Carrier Raster** (which has a 100 kHz spacing), the UE only needs to check the points on the much wider Synchronization Raster (1.2 or 1.4 MHz spacing). This significantly speeds up the initial search.
+
+Once the PSS is found, the device achieves initial time and frequency synchronization and also learns a part of the Physical Cell ID, specifically a value between {0, 1, 2}.
+
+#### 2. Scan for the Secondary Synchronization Signal (SSS)
+
+After detecting the PSS, the UE knows the exact location of the SSS within the same SSB. It then decodes the SSS to obtain the second part of the Physical Cell ID, which is a value between 0 and 335.
+
+<img width="1028" height="947" alt="image" src="https://github.com/user-attachments/assets/c3dfaa3e-3b4b-4fc7-bd60-562a293d2d09" />
+
+By combining the information from both the PSS and SSS, the UE can calculate the complete **Physical Cell ID (PCI)** for the cell. There are a total of 1008 unique PCIs available in 5G NR.
+
+#### 3. Decode the Physical Broadcast Channel (PBCH) for the MIB
+
+<img width="1364" height="880" alt="image" src="https://github.com/user-attachments/assets/a3a18b54-f264-42d1-892a-23be925e1b7d" />
+
+Now that the UE is synchronized and knows the cell's ID, it can decode the Physical Broadcast Channel (PBCH), which is also located within the SSB. The PBCH carries the **Master Information Block (MIB)**.
+
+The MIB contains the most critical system information, including:
+* The system's bandwidth.
+* The System Frame Number (SFN), which helps with timing.
+* Information on whether the cell is barred (not allowing connections).
+* Parameters needed to find and decode the next piece of crucial information: **System Information Block 1 (SIB1)**.
+
+#### 4. Decode System Information Block 1 (SIB1)
+
+<img width="1311" height="862" alt="image" src="https://github.com/user-attachments/assets/0fadf0ae-c346-430c-a094-961367e58b95" />
+
+Using the information from the MIB, the UE can find and decode SIB1. SIB1 is also considered part of the **Remaining Minimum System Information (RMSI)** and contains essential information for the UE to access the cell, such as:
+* Cell selection information.
+* Cell access-related information.
+* Information about where to find other, less critical SIBs.
+
+At this point, the UE has enough information to decide whether it wants to "camp" on this cell and attempt to connect.
+
+#### 5. Acquiring Other SIBs
+
+<img width="1557" height="917" alt="image" src="https://github.com/user-attachments/assets/55e0016d-10d4-4abb-8e4a-6401c238a80a" />
+
+Other System Information Blocks (SIBs) contain less essential information that is not immediately needed for initial access, such as details for cell re-selection to other frequencies or other radio technologies (like LTE). These can be broadcast periodically by the network or provided to the device on-demand when requested.
+
+<img width="819" height="875" alt="image" src="https://github.com/user-attachments/assets/efbdc0e3-436b-471f-af26-2a269ac56999" />
