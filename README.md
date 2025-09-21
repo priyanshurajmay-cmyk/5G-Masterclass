@@ -336,7 +336,7 @@ While Options 2 and 3 are the most prominent, other configurations exist for dif
 
 * **Option 6**: A configuration where a 5G gNodeB would connect to a 4G Core. This option is **not supported** by the standards.
 
-  ![Uploading image.png…]()
+  <img width="606" height="306" alt="image" src="https://github.com/user-attachments/assets/0c0a4054-716c-4519-9f28-864c9b0fbce4" />
 
 
 # 2. 5G RAN Protocol Stack
@@ -582,6 +582,99 @@ Some applications require that data packets are received in the exact order they
 
 <img width="1459" height="972" alt="image" src="https://github.com/user-attachments/assets/f11e192e-adf1-4f24-b540-01af802944ed" />
 
+# 2.3 Radio Link Control (RLC)
+
+The Radio Link Control (RLC) layer is a part of the 5G NR protocol stack that sits between the Packet Data Convergence Protocol (PDCP) layer and the Medium Access Control (MAC) layer.
+
+### Main Functions of RLC
+
+The RLC layer has two primary functions:
+
+<img width="683" height="386" alt="image" src="https://github.com/user-attachments/assets/8619b777-bf79-4dac-a8fe-2f763f5d1430" />
+
+* **Segmentation**: Breaking down or combining data packets to fit the transport block size provided by the lower physical layer.
+* **ARQ (Automatic Repeat Request)**: Handling retransmissions of lost data packets to ensure reliable data delivery.
+
+---
+
+### RLC Modes
+
+To cater to the different requirements of various applications, the RLC can operate in one of three modes.
+
+<img width="1512" height="896" alt="image" src="https://github.com/user-attachments/assets/1ac6e8cb-aac4-487f-98dc-8876bf409b79" />
+
+1.  **Transparent Mode (TM)**
+    * In this mode, the RLC layer is essentially bypassed and does not perform any of its main functions.
+    * **Features**:
+        * No retransmission.
+        * No duplicate detection.
+        * No segmentation or reassembly.
+    * **Use Case**: Primarily used for broadcasting control plane information on channels like BCCH, CCCH, and PCCH, where segmentation and retransmissions are unnecessary.
+
+2.  **Unacknowledged Mode (UM)**
+    * This mode provides segmentation services but does not offer guaranteed delivery through retransmissions.
+    * **Features**:
+        * Performs segmentation and reassembly.
+        * Does not perform retransmissions.
+    * **Use Case**: Suitable for services where low latency is critical and some data loss is acceptable, such as Voice over IP (VoIP).
+
+3.  **Acknowledged Mode (AM)**
+    * This is the most comprehensive mode, providing reliable data transfer using both segmentation and retransmissions.
+    * **Features**:
+        * Handles retransmissions.
+        * Performs segmentation and reassembly.
+        * Provides duplicate removal.
+    * **Use Case**: Essential for services that require error-free data delivery, such as web browsing and file transfers.
+
+---
+
+### Segmentation
+
+<img width="1427" height="908" alt="image" src="https://github.com/user-attachments/assets/59c07cee-cdcd-41a2-b36e-f4867e111224" />
+
+Segmentation is the process where the RLC layer adapts the size of upper layer data packets, known as RLC Service Data Units (SDUs), to fit into the transport blocks for transmission by the MAC layer. The resulting packets are called RLC Protocol Data Units (PDUs).
+
+The RLC PDU header contains several key fields to manage this process:
+* **SDU Sequence Number (SN)**: A unique number assigned to each RLC SDU to track packets. The size of the sequence number can be 6/12 bits in UM and 12/18 bits in AM.
+* **Segmentation Information (SI)**: This field indicates whether a PDU contains a complete SDU, or if it is the first, middle, or last segment of an SDU.
+* **Segmentation Offset (SO)**: For segmented PDUs, this field specifies the starting point of the segment within the original SDU, which is crucial for correct reassembly at the receiver.
+
+#### RLC Concatenation in NR vs. LTE
+
+* In **LTE**, multiple RLC PDUs were often concatenated by the RLC layer itself into a single, larger PDU before being passed to the MAC layer.
+* In **5G NR**, this concatenation function is moved from the RLC layer to the MAC layer. This change reduces latency, as the RLC layer can prepare PDUs immediately without waiting for a scheduling grant from the base station to know the final transport block size.
+
+---
+
+### Retransmissions (ARQ)
+
+<img width="825" height="723" alt="image" src="https://github.com/user-attachments/assets/05c666c8-57a0-4893-a195-f350e30f55c7" />
+
+The ARQ function in RLC Acknowledged Mode ensures reliable data delivery by retransmitting lost PDUs.
+
+#### In-Sequence Delivery in NR vs. LTE
+
+A significant change in 5G NR is that the RLC layer is no longer responsible for ensuring in-sequence delivery of packets to the upper layers. In LTE, RLC had to reorder packets and wait for any missing ones before delivering them. In NR, this function is optionally handled by the PDCP layer.
+
+This change provides two main benefits:
+1.  **Lower Latency**: Packets that arrive out of order can be delivered immediately to the PDCP layer without waiting for the retransmission of a missing packet, which is critical for low-latency applications.
+2.  **Reduced Buffering**: Since the RLC layer doesn't need to buffer subsequent packets while waiting for a missing one, memory requirements are reduced.
+
+#### Retransmission Process Example
+
+The retransmission process involves coordination between the transmitter and receiver using transmit/receive windows and status reports.
+
+1.  **Initial Transmission (T0)**: The transmitter sends PDUs. PDUs that have been successfully received and acknowledged are marked (e.g., in green). Those transmitted but not yet acknowledged are kept in the transmit buffer (e.g., in red). The transmit window starts from the first unacknowledged PDU.
+
+2.  **Packet Loss (T1)**: The transmitter sends PDUs `n+1` and `n+2`, but the receiver only gets `n+2`. The receiver notes the gap and starts a **reassembly timer**, but immediately forwards the received `n+2` PDU to the upper layers.
+
+3.  **Missing Packet Arrives (T2)**: If the missing PDU (`n+1`) arrives before the timer expires, the timer is stopped, and the packet is processed.
+
+4.  **Timer Expiry and Status Report (T3-T4)**: If transmission continues and more packets are lost (e.g., `n+3` and `n+4`), the receiver's reassembly timer will eventually expire. Upon expiry, the receiver sends a **Status Report** back to the transmitter, indicating which PDUs are missing.
+
+5.  **Retransmission (T5)**: Upon receiving the Status Report, the transmitter retransmits only the missing PDUs (`n+3` and `n+4`). It also advances its transmission window, as the report implicitly acknowledges all PDUs up to the first missing one.
+
+6.  **Successful Reception (T6)**: Once all PDUs, including the retransmitted ones, are successfully received, the transmission is complete. The transmitter can request a final status report to confirm the delivery of all data.
 
 
 
