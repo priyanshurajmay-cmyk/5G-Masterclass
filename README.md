@@ -15,19 +15,7 @@
     * Key procedures that make the network function.
 * Understanding these functionalities is key to enabling the different use cases of 5G.
 
-#### **Target Audience**
-* Telecom Professionals who want to learn about the 5G RAN.
-* Students who are interested in joining the telecommunications industry.
-
-#### **Prerequisites**
-* A basic understanding of the principles of networks.
-* A basic understanding of wireless communications.
-
-#### **Learning Outcomes & Course Structure**
-* At the end of the course, you will be able to work with advanced concepts that are part of the 5G RAN.
-* The course is structured to make complex ideas simple to understand, using visual illustrations where necessary.
-
-# 2. The 5G standardization
+# 1.1 The 5G standardization
 
 ***
 
@@ -39,7 +27,7 @@ The development of a global technology like 5G raises two fundamental questions:
 
 The process that answers these questions is **standardization**.
 
-### The Power Outlet Analogy 🔌
+### The Power Outlet Analogy
 
 <img width="1690" height="842" alt="image" src="https://github.com/user-attachments/assets/e7f7c937-b7a8-4f58-84d3-c5944518f398" />
 
@@ -167,7 +155,7 @@ The development of 5G followed a clear, collaborative process between 2015 and 2
 * **5.5G**: A potential mid-cycle update, expected around 2024.
 * **6G**: Following the roughly 10-year cycle, work on 6G is expected to formalize, with a potential release around 2029.
 
-# 3. The 5G use cases
+# 1.2 The 5G use cases
 
 ### The Three Dimensions of 5G Use Cases
 5G technology is designed around three primary use cases that form a dimensional triangle. Understanding these use cases is crucial for designing the features required to serve them.
@@ -198,7 +186,7 @@ URLLC is designed for mission-critical applications that demand extremely high r
 <img width="2107" height="1066" alt="image" src="https://github.com/user-attachments/assets/e38c6e50-9b4c-46f7-be1f-79083fd557e5" />
 
 
-# 4. Overview of the 5G System Architecture
+# 1.3 Overview of the 5G System Architecture
 
 <img width="1683" height="719" alt="image" src="https://github.com/user-attachments/assets/507db158-43af-4eb6-9bab-df0fbb64c14d" />
 
@@ -262,7 +250,96 @@ The reference point architecture defines several key interfaces between network 
 * **N3:** The user plane interface between the gNodeB and the UPF.
 * **N4:** The interface between the SMF and the UPF.
 
-# 3. 5G RAN Protocol Stack
+# 1.4 The 5G Deployment Options
+
+### Introduction: Standalone vs. Non-Standalone
+
+As mobile operators transition from 4G to 5G, they can't just flip a switch. For many years, 4G and 5G networks will coexist. This reality has led to two primary deployment strategies.
+
+<img width="1549" height="893" alt="image" src="https://github.com/user-attachments/assets/2502bf01-de6f-458d-b993-a6aeba5d1eb3" />
+
+* **Standalone (SA)**: A pure, end-to-end 5G network. This includes 5G base stations (**gNodeBs**) connecting to a **5G Core (5GC)** network. This is the ultimate goal for 5G, unlocking its full potential like ultra-low latency and network slicing.
+* **Non-Standalone (NSA)**: A transitional approach where new 5G gNodeBs are added to an existing 4G network infrastructure. This allows operators to leverage their existing 4G Core network (**EPC**) and offer 5G speeds more quickly and economically.
+
+Several specific deployment "Options" define how these components can be interconnected.
+
+---
+
+<img width="1672" height="901" alt="image" src="https://github.com/user-attachments/assets/6215bf31-4128-4544-82f8-6c98de1949c0" />
+
+### Option 1: Legacy 4G LTE
+
+This is the existing 4G network that serves as the baseline before any 5G deployment.
+
+* **Radio**: 4G **eNodeB**.
+* **Core**: 4G **EPC (Evolved Packet Core)**.
+* This is a complete, self-contained 4G system.
+
+---
+
+### Option 2: 5G Standalone (SA)
+
+This is the "true" 5G network, operating independently of any 4G infrastructure.
+
+
+* **Radio**: 5G **gNodeB**.
+* **Core**: **5G Core (5GC)**.
+* **Characteristics**:
+    * This is the target architecture for the full 5G experience.
+    * It's required for advanced 5G use cases that depend on the new 5G core network's capabilities.
+    * There is no interworking with a legacy 4G core network.
+
+---
+
+### Option 3: Non-Standalone (NSA) with EN-DC
+
+<img width="1669" height="888" alt="image" src="https://github.com/user-attachments/assets/adb912b4-664a-4533-a4aa-73d8dd78b990" />
+
+This is the most common initial deployment strategy for 5G, known as **EN-DC (E-UTRAN New Radio – Dual Connectivity)**.
+
+
+* **Architecture**: The network uses both 4G eNodeBs and 5G gNodeBs, but everything connects to the existing **4G EPC**.
+* **Control Plane (Signaling)**: The 4G **eNodeB** acts as the **master node**. It handles all the control signaling with the 4G core network. The green lines in the diagram show this control path.
+* **User Plane (Data)**: The UE connects to both the 4G eNodeB and the 5G gNodeB. The **gNodeB** acts as a **secondary node** purely for a data speed boost. User data can be split and sent over both 4G and 5G paths simultaneously to increase throughput. The red lines in the diagram show the data path.
+* **Why it's used**: It's a cost-effective way to launch 5G services quickly by reusing the existing 4G core and leveraging the wide coverage of the 4G network. It's ideal for areas with "spotty" initial 5G coverage.
+
+#### Variants of Option 3
+
+<img width="1664" height="923" alt="image" src="https://github.com/user-attachments/assets/15156ef1-b4f9-48aa-a581-47adc7ca6d36" />
+
+There are slight variations of this option that define how the user data is split:
+* **Option 3**: Data is sent from the core to the eNodeB, which then splits it between itself and the gNodeB.
+* **Option 3a**: Data is split in the core network, with separate paths going to the eNodeB and gNodeB.
+* **Option 3x**: A hybrid approach offering the most flexibility, where data can be split at either the eNodeB or the core network.
+
+---
+
+### Other Key Deployment Options
+
+While Options 2 and 3 are the most prominent, other configurations exist for different migration scenarios.
+<img width="1651" height="871" alt="image" src="https://github.com/user-attachments/assets/e91affd2-3e00-4d28-a55b-6917e1a703e3" />
+
+* **Option 4 (NE-DC)**: This is the reverse of Option 3. It uses the **5G Core**, with the **gNodeB as the master node** for control signaling and the **eNodeB as a secondary data booster**. This becomes relevant when 5G coverage is mature and becomes the primary network.
+
+  <img width="1674" height="1001" alt="image" src="https://github.com/user-attachments/assets/2672432c-c56b-42ef-91d3-592f94e07eac" />
+
+  <img width="1029" height="897" alt="image" src="https://github.com/user-attachments/assets/5fccc732-f5a3-4491-92d8-60519aea1f37" />
+
+
+* **Option 5**: An upgraded 4G base station, called an **eLTE eNodeB**, connects directly to the **5G Core**.
+
+  <img width="1272" height="922" alt="image" src="https://github.com/user-attachments/assets/e2dbdfc4-996f-4aea-832c-04964d929534" />
+
+* **Option 7**: A variation where an eLTE eNodeB connects to the **5G Core** and acts as the master node, with a gNodeB serving as the secondary node.
+
+  <img width="1201" height="982" alt="image" src="https://github.com/user-attachments/assets/12f3effa-ef92-4987-b64c-225547eb0695" />
+
+* **Option 6**: A configuration where a 5G gNodeB would connect to a 4G Core. This option is **not supported** by the standards.
+
+  ![Uploading image.png…]()
+
+
+# 2. 5G RAN Protocol Stack
 
 ### The RAN Protocol Stack Overview
 
@@ -367,6 +444,145 @@ These terms describe how data is viewed at different layers of the protocol stac
 
 * **SDU (Service Data Unit)**: The data packet that a layer receives from the layer directly above it. Think of it as the "cargo" that needs to be transported.
 * **PDU (Protocol Data Unit)**: The data packet that a layer sends to the layer directly below it. It consists of the SDU (the cargo) plus a header added by the current layer for control purposes.
+
+# 2.1 Service data Adaptation Protocol(SDAP)
+
+***Service Data Adaptation Protocol (SDAP) and Quality of Service (QoS).***
+
+### The Need for QoS in 5G
+
+5G is designed to support a wide variety of services with very different network requirements. This diversity makes a "one-size-fits-all" approach to data handling impossible.
+
+<img width="1666" height="917" alt="image" src="https://github.com/user-attachments/assets/05820854-334d-4fa7-b27b-114466500fea" />
+
+* **Voice**: Requires a steady, continuous flow of data, but at a low data rate.
+* **Broadband**: Involves bursty traffic with very high data rates, like web browsing or file downloads.
+* **Massive MTC (Machine-Type Communications)**: Characterized by a huge number of devices sending small amounts of data infrequently.
+* **URLLC (Ultra-Reliable Low-Latency Communications)**: Demands extremely high reliability and very low delay, crucial for applications like remote surgery or autonomous vehicles.
+
+To handle this, 5G uses a **Quality of Service (QoS)** framework. QoS is the mechanism that manages data traffic to ensure each application gets the performance it needs by prioritizing different data flows.
+
+---
+
+### Understanding QoS Flows
+
+<img width="1708" height="910" alt="image" src="https://github.com/user-attachments/assets/23f1839d-4f6c-46dc-b052-433fe5029586" />
+
+The foundation of 5G QoS is the **QoS Flow**.
+
+A QoS Flow is the finest level of granularity for policy enforcement and data handling. Think of it as a dedicated "pipe" for a specific type of data traffic from the User Equipment (UE) all the way to the UPF (User Plane Function) in the core network, which connects to the internet.
+
+
+* Each packet belonging to a specific application or service is mapped to a QoS Flow.
+* Every QoS Flow is identified by a **QoS Flow Identifier (QFI)**.
+* Packets with the same QFI receive the same traffic treatment (e.g., same priority, latency, and reliability).
+
+---
+
+### Types of QoS Flows
+
+There are three main types of QoS flows, each defined by the guarantees it provides.
+
+<img width="1659" height="724" alt="image" src="https://github.com/user-attachments/assets/3897b565-dcea-45ab-9eba-35b3c8ace162" />
+
+* **GBR (Guaranteed Bit Rate)**: This flow type is for services that need a reserved, constant data rate. It's essential for applications that can't tolerate interruptions.
+    * **Example**: Conversational voice calls or live video streaming.
+* **Non-GBR (Non-Guaranteed Bit Rate)**: This is a "best effort" flow. The network doesn't reserve a specific data rate, making it suitable for applications that can handle variations in speed and are bursty in nature.
+    * **Example**: Web browsing, email, and file downloads.
+* **Delay-Critical GBR**: A specialized GBR flow for URLLC services that require both a guaranteed data rate and extremely low latency.
+    * **Example**: Remote control of machinery or vehicle-to-everything (V2X) communications.
+
+<img width="1676" height="889" alt="image" src="https://github.com/user-attachments/assets/32cdc977-25cb-4932-b075-e3b48b271b68" />
+
+<img width="1590" height="979" alt="image" src="https://github.com/user-attachments/assets/706686b7-7b9e-4260-869d-4f8f8217360b" />
+
+---
+
+### The Role of the SDAP Layer 
+
+<img width="1640" height="962" alt="image" src="https://github.com/user-attachments/assets/08beaff5-4d72-4636-982c-cb0e3520175c" />
+
+The **Service Data Adaptation Protocol (SDAP)** is a protocol layer in the 5G Radio Access Network (RAN) whose primary job is to manage QoS.
+
+The core network deals with QoS in terms of **QoS Flows**. The radio network, however, transports data over **Radio Bearers**. The key function of the SDAP layer is to be the bridge between these two concepts.
+
+**SDAP maps the QoS Flows from the core network to the appropriate Data Radio Bearers (DRBs) for transmission over the air.**
+
+<img width="1630" height="938" alt="image" src="https://github.com/user-attachments/assets/9b42ea6c-cb23-4262-b044-29cd5e73b959" />
+
+For example, multiple Non-GBR QoS flows (like web browsing, WhatsApp messages, and a YouTube video) might be mapped by the SDAP layer onto a single "best effort" Radio Bearer. At the same time, a high-priority GBR flow (like a Zoom video call) might be mapped to its own dedicated Radio Bearer to guarantee its performance.
+
+### Uplink QoS Mapping
+
+<img width="1671" height="716" alt="image" src="https://github.com/user-attachments/assets/c5dc28d4-499a-48dd-b5b1-1e0682cd96bd" />
+
+For uplink traffic (from the UE to the network), there are two ways to map data to the correct QoS flow:
+
+* **Reflective Mapping**: The UE automatically mirrors the mapping used in the downlink. If it receives data for a specific service on a certain QoS Flow, it will use that same flow for sending data for that service.
+* **Explicit Mapping**: The network uses RRC (Radio Resource Control) signaling to explicitly tell the UE which QoS Flow to use for its uplink traffic.
+
+# 2.2 Packet data convergence protocol (PDCP)
+
+### Introduction to PDCP
+
+The **Packet Data Convergence Protocol (PDCP)** is a key layer in the 5G protocol stack, sitting just below the SDAP layer. Its primary role is to process IP packets to make them suitable for efficient and secure transmission over the radio interface.
+
+<img width="1102" height="677" alt="image" src="https://github.com/user-attachments/assets/3e0a1171-ff9c-4153-90c9-bf294b3cf6aa" />
+
+The main functions of PDCP include:
+* Header Compression
+* Ciphering and Integrity Protection (Security)
+* Routing and Duplication for Split Bearers
+* In-sequence delivery of data
+
+---
+
+### Header Compression 
+
+IP packets have large headers (**40 bytes for IPv4, 60 bytes for IPv6**). For applications that send small amounts of data, like voice calls, this header is a significant overhead.
+
+<img width="1505" height="853" alt="image" src="https://github.com/user-attachments/assets/b1a208aa-f607-48b0-93e8-c139cae6eef4" />
+
+PDCP solves this using **Robust Header Compression (ROHC)**. This technique compresses the large IP/UDP/RTP headers down to just a few bytes, freeing up valuable space on the radio interface for actual user data. The PDCP layer on the receiving end is then responsible for decompressing the header back to its original format.
+
+
+---
+
+### Ciphering & Integrity Protection 
+
+PDCP is responsible for securing the data transmitted over the air. It provides two main security functions:
+
+<img width="1647" height="753" alt="image" src="https://github.com/user-attachments/assets/b3543190-5c2d-4ecf-89af-ef95f6bd4aa5" />
+
+* **Ciphering (Confidentiality)**: This process encrypts the user data to prevent eavesdropping. It uses an **Encryption Algorithm (NEA)** along with a security key to convert the plaintext data into ciphertext before transmission. The receiver uses the same key and algorithm to decrypt the data.
+* **Integrity Protection (Authenticity)**: This ensures that the data has not been altered in transit and originates from a trusted source. It uses an **Integrity Algorithm (NIA)** to create a Message Authentication Code (MAC) that is appended to the message. The receiver recalculates this code and verifies it to ensure the message's integrity.
+
+
+---
+
+### Routing & Duplication (Split Bearer) 
+
+5G supports **Dual Connectivity**, where a device can be connected to two cell towers simultaneously: a **Master Cell** and a **Secondary Cell**. PDCP manages the data flow in this scenario.
+
+<img width="1662" height="859" alt="image" src="https://github.com/user-attachments/assets/e1d9ec9c-0bae-453e-aad5-15e95ff4f4e5" />
+
+* **Routing (Split Bearer)**: To increase the data rate, PDCP can split a single data stream (a bearer) across both the Master and Secondary cells. This allows the device to aggregate the bandwidth from both cells.
+* **Duplication**: To increase reliability, PDCP can duplicate data packets and send identical copies over both the Master and Secondary cell paths. The receiving PDCP layer is then responsible for discarding any duplicate packets that arrive, ensuring the higher layers only receive one copy. This is critical for ultra-reliable services.
+
+---
+
+### In-sequence Delivery 
+
+Some applications require that data packets are received in the exact order they were sent, while others do not. PDCP can handle both scenarios.
+
+<img width="1651" height="831" alt="image" src="https://github.com/user-attachments/assets/ce819c68-6f7f-4c96-925f-8867e9b44f3d" />
+
+* **Out-of-sequence delivery**: Packets are sent to the higher layers as soon as they arrive from the radio link, even if they are out of order. This is suitable for services like file transfers where the higher-level TCP protocol can handle reordering.
+* **In-sequence delivery**: PDCP adds a **Sequence Number** to each packet. On the receiving side, it uses a buffer to reorder any packets that arrive out of sequence before delivering them to the higher layers. This is essential for real-time applications like video streaming to avoid glitches.
+
+<img width="1459" height="972" alt="image" src="https://github.com/user-attachments/assets/f11e192e-adf1-4f24-b540-01af802944ed" />
+
+
 
 
 
