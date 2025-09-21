@@ -317,18 +317,18 @@ There are slight variations of this option that define how the user data is spli
 ### Other Key Deployment Options
 
 While Options 2 and 3 are the most prominent, other configurations exist for different migration scenarios.
-<img width="1651" height="871" alt="image" src="https://github.com/user-attachments/assets/e91affd2-3e00-4d28-a55b-6917e1a703e3" />
+
 
 * **Option 4 (NE-DC)**: This is the reverse of Option 3. It uses the **5G Core**, with the **gNodeB as the master node** for control signaling and the **eNodeB as a secondary data booster**. This becomes relevant when 5G coverage is mature and becomes the primary network.
 
+<img width="1651" height="871" alt="image" src="https://github.com/user-attachments/assets/e91affd2-3e00-4d28-a55b-6917e1a703e3" />
+
   <img width="1674" height="1001" alt="image" src="https://github.com/user-attachments/assets/2672432c-c56b-42ef-91d3-592f94e07eac" />
-
-  <img width="1029" height="897" alt="image" src="https://github.com/user-attachments/assets/5fccc732-f5a3-4491-92d8-60519aea1f37" />
-
 
 * **Option 5**: An upgraded 4G base station, called an **eLTE eNodeB**, connects directly to the **5G Core**.
 
-  <img width="1272" height="922" alt="image" src="https://github.com/user-attachments/assets/e2dbdfc4-996f-4aea-832c-04964d929534" />
+<img width="1255" height="956" alt="image" src="https://github.com/user-attachments/assets/bb4db2f3-5e05-4930-afa7-2c77240a15b7" />
+
 
 * **Option 7**: A variation where an eLTE eNodeB connects to the **5G Core** and acts as the master node, with a gNodeB serving as the secondary node.
 
@@ -336,7 +336,7 @@ While Options 2 and 3 are the most prominent, other configurations exist for dif
 
 * **Option 6**: A configuration where a 5G gNodeB would connect to a 4G Core. This option is **not supported** by the standards.
 
-  <img width="606" height="306" alt="image" src="https://github.com/user-attachments/assets/0c0a4054-716c-4519-9f28-864c9b0fbce4" />
+<img width="1382" height="934" alt="image" src="https://github.com/user-attachments/assets/4c40aed6-397c-4563-9aed-8aac537ca313" />
 
 
 # 2. 5G RAN Protocol Stack
@@ -954,3 +954,88 @@ The journey of data from the MAC layer through the physical layer for a downlink
 
 <img width="1431" height="815" alt="image" src="https://github.com/user-attachments/assets/382695c1-2be4-4f7e-8c3d-413bb2a65ad6" />
 
+# 2.7 Physical Layer Structure
+
+## 5G NR: Physical Layer Structure
+
+The physical layer in 5G New Radio (NR) is designed with immense flexibility to handle a wide variety of services, from high-speed mobile broadband to ultra-reliable low-latency communications. This is achieved through a versatile structure encompassing its modulation scheme, multiple access techniques, and a flexible time-domain organization.
+
+---
+
+### Modulation Scheme: OFDM and its Variants
+
+<img width="1618" height="874" alt="image" src="https://github.com/user-attachments/assets/0cf0506c-2b09-4051-bec7-0a1f4afa1975" />
+
+Orthogonal Frequency-Division Multiplexing (OFDM) is the core modulation scheme for 5G NR. It's a technique that transmits a wideband signal by breaking it down into multiple narrowband signals, each carried on an orthogonal subcarrier. This approach is highly effective at combating frequency-selective fading, a common problem in wireless channels where certain frequencies are attenuated more than others.
+
+<img width="1610" height="842" alt="image" src="https://github.com/user-attachments/assets/ba8f4790-1c80-49a4-a6e4-a2a9c434dd23" />
+
+To further mitigate inter-symbol interference caused by multipath propagation, a **Cyclic Prefix (CP)** is added to each OFDM symbol. The CP is essentially a copy of the end of the symbol pasted at the beginning, creating a guard interval.
+
+#### Uplink vs. Downlink Waveforms
+
+<img width="1461" height="970" alt="image" src="https://github.com/user-attachments/assets/300ee545-ac85-4565-8e98-b3f0d3efba76" />
+
+While the downlink uses standard OFDM, the uplink has two options:
+* **CP-OFDM**: Identical to the downlink waveform.
+* **DFT-Precoded OFDM (also known as SC-FDMA)**: This is a variation where the data undergoes a DFT (Discrete Fourier Transform) precoding step before the standard OFDM modulation. The key benefit of this is a **lower Peak-to-Average Power Ratio (PAPR)**. A high PAPR requires more expensive and less power-efficient amplifiers, which is a major constraint for battery-powered devices. Using DFT-precoded OFDM in the uplink helps to conserve the device's battery life.
+
+---
+
+### Multiple Access Scheme
+
+A multiple access scheme is the technique that allows multiple mobile users to share the available radio spectrum efficiently.
+
+<img width="1558" height="817" alt="image" src="https://github.com/user-attachments/assets/6b4b909e-bbf3-449d-8567-d4f802e267aa" />
+
+* **OFDMA (Orthogonal Frequency-Division Multiple Access)**: This is the primary multiple access scheme in 5G NR. It's a multi-user version of OFDM where different users are allocated different subsets of the available subcarriers. This allows for very flexible and granular resource allocation in both the time and frequency domains.
+* **DFT-Precoded OFDMA**: This is the multi-user version of the DFT-precoded OFDM waveform used in the uplink. It shares the same principle of allocating resources but ensures a lower PAPR for the transmitting devices.
+
+---
+
+### Flexible Numerology
+
+A defining feature of 5G NR is its **flexible numerology**. This means that the subcarrier spacing (SCS) is not fixed but can be scaled to suit different deployment scenarios and frequency bands.
+
+<img width="1432" height="822" alt="image" src="https://github.com/user-attachments/assets/1e705252-8a45-4793-b224-eb339fc0c44b" />
+
+The key trade-offs are:
+* **Large Subcarrier Spacing** (e.g., 120 kHz, 240 kHz):
+    * **Pros**: Less sensitive to frequency errors (phase noise). Shorter symbol duration, which is better for low-latency applications.
+    * **Cons**: The cyclic prefix becomes a larger portion of the symbol, making it less efficient.
+* **Small Subcarrier Spacing** (e.g., 15 kHz, 30 kHz):
+    * **Pros**: More efficient use of the cyclic prefix.
+    * **Cons**: More sensitive to frequency errors.
+
+This flexibility allows NR to operate efficiently across a vast range of frequencies (from sub-1 GHz to millimeter wave) and for various cell sizes and service types.
+
+---
+
+### Time-Domain Structure
+
+<img width="1651" height="949" alt="image" src="https://github.com/user-attachments/assets/fd177e5d-1947-49b7-9eb8-48320658df9f" />
+
+The 5G NR time domain is structured hierarchically:
+* **Frame**: A fixed duration of **10 ms**.
+* **Subframe**: Each frame is divided into 10 subframes, each **1 ms** long.
+* **Slot**: The number of slots per subframe depends on the numerology (subcarrier spacing). A slot always consists of **14 OFDM symbols**. As the subcarrier spacing increases, the symbol duration decreases, so more slots can fit into a 1 ms subframe. For example:
+    * 15 kHz SCS: 1 slot per subframe
+    * 30 kHz SCS: 2 slots per subframe
+    * 60 kHz SCS: 4 slots per subframe
+    * 120 kHz SCS: 8 slots per subframe
+
+#### Mini-Slots
+
+<img width="1572" height="925" alt="image" src="https://github.com/user-attachments/assets/b20f4ac1-6df7-448a-9b39-cf1b4ed18ae8" />
+
+For applications requiring extremely low latency, waiting for a full slot boundary to start a transmission can be too slow. To address this, NR introduces the concept of **mini-slots**. A mini-slot can be shorter than a full slot (2, 4, or 7 symbols long) and can start at any symbol boundary, allowing for much faster and more agile scheduling.
+
+---
+
+### Resource Grid
+
+<img width="1343" height="941" alt="image" src="https://github.com/user-attachments/assets/30be103a-d8ea-409c-879b-d3f077a32efa" />
+
+The fundamental unit of the 5G resource grid is the **Resource Element (RE)**, which represents one subcarrier in the frequency domain for the duration of one OFDM symbol in the time domain.
+
+For scheduling purposes, Resource Elements are grouped into **Resource Blocks (RBs)**. One Resource Block consists of **12 consecutive subcarriers** in the frequency domain.
