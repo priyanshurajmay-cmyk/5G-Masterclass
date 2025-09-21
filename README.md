@@ -262,6 +262,112 @@ The reference point architecture defines several key interfaces between network 
 * **N3:** The user plane interface between the gNodeB and the UPF.
 * **N4:** The interface between the SMF and the UPF.
 
+# 3. 5G RAN Protocol Stack
+
+### The RAN Protocol Stack Overview
+
+<img width="2093" height="1114" alt="image" src="https://github.com/user-attachments/assets/33f45844-75ad-4e58-85b8-933cbb7f82e9" />
+
+The 5G New Radio (NR) system utilizes two distinct protocol stacks:
+
+* **User Plane Protocol Stack**: This stack is responsible for carrying user data between applications on the User Equipment (UE) and the network.
+* **Control Plane Protocol Stack**: This stack carries control information between the UE, the gNodeB (the 5G base station), and the core network.
+
+In both stacks, each protocol layer communicates with its corresponding peer layer on the other end (e.g., the RLC layer on the UE communicates with the RLC layer on the gNodeB). Layers provide services to the layer above them and utilize services from the layer below.
+
+---
+
+### User Plane Protocol Stack
+
+The User Plane stack handles all user data traffic. It consists of the following layers from top to bottom: SDAP, PDCP, RLC, MAC, and PHY.
+
+
+
+#### **SDAP (Service Data Adaptation Protocol)**
+
+<img width="1755" height="1092" alt="image" src="https://github.com/user-attachments/assets/9fe2f82e-eb95-40f3-aad4-535acddca24a" />
+
+* **Primary Function**: Manages Quality of Service (QoS).
+* **Details**: It maps QoS flows to specific data radio bearers to ensure that data from different applications (like video streaming vs. web browsing) receives the appropriate network treatment.
+
+#### **PDCP (Packet Data Convergence Protocol)**
+
+<img width="2012" height="1101" alt="image" src="https://github.com/user-attachments/assets/9c800bcb-cdc8-4c37-bfc9-461495822325" />
+
+* **Primary Functions**: This layer adapts data for efficient and secure transmission over the radio interface.
+* **Key Responsibilities**:
+    * **Header compression** to reduce overhead.
+    * **Ciphering & Integrity protection** for security.
+    * **Duplicate removal** to handle retransmissions from lower layers.
+
+#### **RLC (Radio Link Control)**
+
+<img width="1818" height="1085" alt="image" src="https://github.com/user-attachments/assets/7ef87f3d-3179-48d9-bf4f-ca78321b9c69" />
+
+* **Primary Functions**: Ensures reliable data transfer between the UE and gNodeB.
+* **Key Responsibilities**:
+    * **ARQ (Automatic Repeat Request)**: A robust error detection and retransmission scheme.
+    * **Segmentation and Reassembly**: Breaks down larger packets into smaller units for transmission and puts them back together at the receiving end.
+
+#### **MAC (Medium Access Control)**
+
+<img width="1834" height="1081" alt="image" src="https://github.com/user-attachments/assets/444d4b1f-d011-4655-9eca-0bd09f2cf754" />
+
+
+* **Primary Functions**: Manages access to the shared wireless channel.
+* **Key Responsibilities**:
+    * **Retransmission**: Handles very fast retransmissions using a process called Hybrid ARQ (HARQ).
+    * **Multiplexing/Demultiplexing**: Combines data from different logical channels into single transport blocks.
+    * **Scheduling**: Decides which users get to transmit and receive data at any given time.
+
+#### **PHY (Physical Layer)**
+
+<img width="2033" height="1114" alt="image" src="https://github.com/user-attachments/assets/cd5b4ee0-56ae-4b77-b84e-c66839d3aee5" />
+
+* **Primary Function**: Responsible for the actual transmission and reception of bits and bytes over the air interface.
+* **Details**: It handles efficient wireless communication through processes like channel coding, modulation, and managing multiple antennas.
+
+---
+
+<img width="1986" height="1113" alt="image" src="https://github.com/user-attachments/assets/3546b69d-08c4-43c4-bb08-cd24e004735a" />
+
+### Control Plane Protocol Stack
+
+The Control Plane stack manages the connection and radio resources. Its lower layers (PDCP, RLC, MAC, PHY) perform the same functions as in the User Plane. It includes two unique higher layers: RRC and NAS.
+
+
+
+#### **NAS (Non-access Stratum)**
+
+<img width="2004" height="1096" alt="image" src="https://github.com/user-attachments/assets/9198c63b-d5a1-45ab-965c-085bc41173c8" />
+
+* **Communication**: Operates directly between the UE and the AMF (Access and Mobility Management Function) in the 5G core network. It is "non-access" because its messages are transparent to the gNodeB.
+* **Key Responsibilities**:
+    * Authentication and Security procedures.
+    * Idle mode procedures, such as paging the UE when there is incoming data.
+    * Establishing and managing communication sessions.
+
+#### **RRC (Radio Resource Control)**
+
+<img width="1947" height="1084" alt="image" src="https://github.com/user-attachments/assets/71c60538-5ad6-4d46-b6d4-4f52fa26ac66" />
+
+* **Communication**: Operates between the UE and the gNodeB.
+* **Key Responsibilities**:
+    * Broadcasting System Information that UEs need to connect to the cell.
+    * Setting up, modifying, and releasing Radio Bearers.
+    * Managing UE measurement configuration and reporting for mobility (handovers).
+
+---
+
+### Key Concepts: SDU and PDU 
+
+These terms describe how data is viewed at different layers of the protocol stack.
+
+<img width="1965" height="998" alt="image" src="https://github.com/user-attachments/assets/e9b4f3ed-2aef-4673-9482-58f32e379165" />
+
+* **SDU (Service Data Unit)**: The data packet that a layer receives from the layer directly above it. Think of it as the "cargo" that needs to be transported.
+* **PDU (Protocol Data Unit)**: The data packet that a layer sends to the layer directly below it. It consists of the SDU (the cargo) plus a header added by the current layer for control purposes.
+
 
 
 
